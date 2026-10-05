@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-heading: 'Outfit', sans-serif;
+    --font-serif: 'Lora', Georgia, serif;
+
+    --bg-primary: #FAF7F2;
+    --bg-card: #FFFFFF;
+    --bg-card-subtle: #F5EFEB;
+    --bg-rose-tint: #FFF1F2;
+
+    --accent-blush: #E88388;
+    --accent-rose: #DD576D;
+    --accent-warm: #E2A077;
+    --accent-sage: #9AB4A2;
+
+    --text-main: #2E2523;
+    --text-muted: #796E69;
+    --text-soft: #A89D98;
+
+    --border-warm: #EFE7DE;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-primary);
+    color: var(--text-main);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e2d7ce;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d4c5b9;
+}
+
+/* Subtle glow effects */
+.glow-blush {
+  box-shadow: 0 10px 30px -5px rgba(221, 87, 109, 0.12);
+}
+
+.glow-warm {
+  box-shadow: 0 10px 30px -5px rgba(226, 160, 119, 0.12);
+}
