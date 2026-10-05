@@ -15,16 +15,15 @@ export const captureThought = async (req, res, next) => {
       });
     }
 
-    // Verify MongoDB connection before attempting capture
     if (!isDbConnected()) {
-      logger.warn('[Capture] Database is disconnected. Rejecting write operation.');
+      logger.warn('[Capture] Database is disconnected.');
       return res.status(503).json({
         success: false,
         message: "Unable to save your thought right now. Please try again."
       });
     }
 
-    // Process structured intent via real Gemma 2 on Ollama
+    // Process structured intent and actions via real Gemma 2 on Ollama
     let extracted;
     try {
       extracted = await gemmaService.extractIntent(rawInput);
@@ -36,37 +35,55 @@ export const captureThought = async (req, res, next) => {
       });
     }
 
-    // Truthful friendly response messages
-    let friendlyMessage = "Saved for later ♡";
-    if (extracted.intent === 'tell_later') {
-      friendlyMessage = extracted.recipient ? `Saved for ${extracted.recipient} ♡` : "Saved for later ♡";
-    } else if (extracted.intent === 'self_care') {
-      friendlyMessage = "Saved your check-in ♡";
-    } else if (extracted.intent === 'reminder') {
-      friendlyMessage = "Reminder saved ♡";
-    } else {
-      friendlyMessage = "Saved to your memories ♡";
+    const itemsToSave = extracted.items || [];
+    const savedDocs = [];
+
+    for (const item of itemsToSave) {
+      const doc = await Item.create({
+        content: item.content || rawInput,
+        intent: item.intent,
+        recipient: item.recipient,
+        category: item.category,
+        priority: item.priority,
+        aiInterpretation: `${item.intent === 'tell_later' && item.recipient ? `Tell ${item.recipient}` : item.intent} • ${item.category}`,
+      });
+      savedDocs.push(doc);
     }
 
-    // Persist validated document to MongoDB
-    const savedItem = await Item.create({
-      content: extracted.content || rawInput,
-      intent: extracted.intent,
-      recipient: extracted.recipient,
-      category: extracted.category,
-      priority: extracted.priority,
-      aiInterpretation: `${extracted.intent === 'tell_later' && extracted.recipient ? `Tell ${extracted.recipient}` : extracted.intent} • ${extracted.category}`,
-    });
+    // Determine gentle, truthful response message
+    let friendlyMessage = "Saved for later ♡";
+    const meal = extracted.mealAssistance;
 
-    logger.info(`[Capture] Successfully saved thought to MongoDB with ID ${savedItem._id} (intent: ${extracted.intent}, recipient: ${extracted.recipient})`);
+    if (meal?.promptForIngredients) {
+      friendlyMessage = "You’ve been busy and haven’t eaten yet. If you want, tell me what food or ingredients you have and I can suggest something simple.";
+    } else if (meal?.suggestion) {
+      friendlyMessage = meal.suggestion;
+    } else if (savedDocs.length > 1) {
+      friendlyMessage = `Saved ${savedDocs.length} items for you ♡`;
+    } else if (savedDocs.length === 1) {
+      const single = savedDocs[0];
+      if (single.intent === 'tell_later' && single.recipient === 'Neeraj') {
+        friendlyMessage = "Saved for Neeraj ♡";
+      } else if (single.intent === 'self_care') {
+        friendlyMessage = "Saved your check-in ♡";
+      } else if (single.intent === 'reminder') {
+        friendlyMessage = "Reminder saved ♡";
+      } else {
+        friendlyMessage = "Saved to your memories ♡";
+      }
+    }
+
+    logger.info(`[Capture] Saved ${savedDocs.length} document(s) to MongoDB from input: "${rawInput}"`);
 
     return res.status(201).json({
       success: true,
-      item: savedItem,
-      intent: extracted.intent,
-      recipient: extracted.recipient,
-      category: extracted.category,
-      priority: extracted.priority,
+      items: savedDocs,
+      item: savedDocs[0] || null,
+      intent: savedDocs[0]?.intent || 'memory',
+      recipient: savedDocs[0]?.recipient || null,
+      category: savedDocs[0]?.category || 'general',
+      priority: savedDocs[0]?.priority || 'normal',
+      mealAssistance: extracted.mealAssistance,
       friendlyMessage,
     });
   } catch (error) {

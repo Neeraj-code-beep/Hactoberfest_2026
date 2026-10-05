@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Sparkles, ArrowRight, Check, AlertCircle, Heart } from 'lucide-react';
+import { Sparkles, ArrowRight, Check, AlertCircle, Utensils, Heart } from 'lucide-react';
 import { captureThoughtApi } from '../../services/api.js';
 
 const QUICK_STARTERS = [
-  'Neha said something funny in class today, tell Neeraj later',
-  'Had lunch on time and drank plenty of water ✨',
-  'Found a quiet library corner with perfect sunlight',
-  'Ask Neeraj about that podcast he recommended',
+  'Neeraj ko internship wali baat batani hai.',
+  'Subah se maine kuch nahi khaya.',
+  'Mere paas bread eggs aur vegetables hain, kya bana sakti hoon?',
+  'Aaj sunset bahut beautiful tha.',
 ];
 
 export default function QuickCaptureCard() {
@@ -23,7 +23,8 @@ export default function QuickCaptureCard() {
       setLastSaved({
         content: thought,
         message: data?.friendlyMessage || 'Saved for later ♡',
-        intent: data?.intent,
+        itemsCount: data?.items?.length || 1,
+        mealAssistance: data?.mealAssistance,
       });
       setThought('');
       setErrorMessage('');
@@ -33,10 +34,10 @@ export default function QuickCaptureCard() {
       queryClient.invalidateQueries({ queryKey: ['memories'] });
       queryClient.invalidateQueries({ queryKey: ['self-care'] });
 
-      // Clear success notification banner after 6 seconds
+      // Clear success notification banner after 8 seconds
       setTimeout(() => {
         setLastSaved((current) => (current?.content === data?.item?.content ? null : current));
-      }, 6000);
+      }, 8000);
     },
     onError: (err) => {
       setErrorMessage(
@@ -82,7 +83,7 @@ export default function QuickCaptureCard() {
             What do you want to remember?
           </h3>
           <p className="text-xs sm:text-sm text-[#8B7D74] mb-5 font-sans leading-relaxed">
-            Jot down a fleeting thought, something funny for Neeraj, or a little self-care moment.
+            Type anything — thoughts, things to tell Neeraj, meals, or multiple tasks at once.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -108,13 +109,13 @@ export default function QuickCaptureCard() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
               {/* Quick suggestion prompt chips */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
-                <span className="text-[11px] text-[#8B7D74] shrink-0 mr-1 hidden sm:inline">Ideas:</span>
+                <span className="text-[11px] text-[#8B7D74] shrink-0 mr-1 hidden sm:inline">Try:</span>
                 {QUICK_STARTERS.slice(0, 2).map((starter, idx) => (
                   <button
                     key={idx}
                     type="button"
                     onClick={() => setThought(starter)}
-                    className="text-[11px] text-[#8B7D74] hover:text-[#3B302B] bg-[#F1E8DA]/60 hover:bg-[#F1E8DA] border border-[#E8DED2]/80 px-3 py-1.5 rounded-full transition-colors truncate max-w-[200px] text-left"
+                    className="text-[11px] text-[#8B7D74] hover:text-[#3B302B] bg-[#F1E8DA]/60 hover:bg-[#F1E8DA] border border-[#E8DED2]/80 px-3 py-1.5 rounded-full transition-colors truncate max-w-[220px] text-left"
                     title={starter}
                   >
                     "{starter}"
@@ -151,22 +152,34 @@ export default function QuickCaptureCard() {
                 animate={{ opacity: 1, y: 0, height: 'auto' }}
                 exit={{ opacity: 0, y: -8, height: 0 }}
                 transition={{ duration: 0.3 }}
-                className="mt-5 p-4 rounded-2xl bg-[#F1E8DA]/80 border border-[#E8C7B8] flex items-start gap-3"
+                className="mt-5 p-4 sm:p-5 rounded-2xl bg-[#F1E8DA]/80 border border-[#E8C7B8] space-y-2"
               >
-                <div className="w-6 h-6 rounded-full bg-[#B97868] text-white flex items-center justify-center shrink-0 mt-0.5">
-                  <Check className="w-3.5 h-3.5" />
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-[#B97868] text-white flex items-center justify-center shrink-0 mt-0.5">
+                    <Check className="w-3.5 h-3.5" />
+                  </div>
+                  <div className="text-xs sm:text-sm text-[#3B302B] space-y-1">
+                    <p className="font-semibold text-[#B97868] font-display text-sm whitespace-pre-line">
+                      {lastSaved.message}
+                    </p>
+                    <p className="text-[#3B302B] italic font-serif">
+                      "{lastSaved.content}"
+                    </p>
+                  </div>
                 </div>
-                <div className="text-xs sm:text-sm text-[#3B302B] space-y-1">
-                  <p className="font-semibold text-[#B97868] font-display text-sm">
-                    {lastSaved.message}
-                  </p>
-                  <p className="text-[#3B302B] italic font-serif">
-                    "{lastSaved.content}"
-                  </p>
-                  <p className="text-[#8B7D74] text-xs">
-                    I'll keep this here for you.
-                  </p>
-                </div>
+
+                {/* Gentle Meal Suggestion Box if ingredients/hunger prompted */}
+                {lastSaved.mealAssistance?.promptForIngredients && (
+                  <div className="mt-3 p-3.5 rounded-xl bg-[#FFFDF8] border border-[#E8DED2] flex items-start gap-2.5 text-xs text-[#8B7D74]">
+                    <Utensils className="w-4 h-4 text-[#B97868] shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-[#3B302B] mb-0.5">A little food might help</p>
+                      <p className="leading-relaxed">
+                        Tell Lumi what ingredients you have at home (e.g., <em>"Mere paas bread eggs aur vegetables hain"</em>) and Gemma can suggest a simple 10–15 minute idea.
+                      </p>
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
-  timeout: 15000,
+  timeout: 25000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -17,10 +17,18 @@ export const checkHealth = async () => {
 };
 
 /**
- * Capture thought via Gemma AI and save
+ * Capture thought via Gemma AI and save to MongoDB
  */
 export const captureThoughtApi = async (text) => {
   const response = await api.post('/capture', { text });
+  return response.data;
+};
+
+/**
+ * Ask Lumi a natural question about memories/thoughts
+ */
+export const askLumiApi = async (question) => {
+  const response = await api.post('/ask', { question });
   return response.data;
 };
 

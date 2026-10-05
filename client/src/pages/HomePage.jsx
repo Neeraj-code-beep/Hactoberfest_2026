@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Sparkles, Heart } from 'lucide-react';
 import { getGreeting } from '../lib/utils.js';
 import QuickCaptureCard from '../features/quickCapture/QuickCaptureCard.jsx';
+import AskLumiCard from '../features/ask/AskLumiCard.jsx';
 import TellLaterPreview from '../features/tellLater/TellLaterPreview.jsx';
 import MemoriesPreview from '../features/memories/MemoriesPreview.jsx';
 import SelfCareCard from '../features/checkins/SelfCareCard.jsx';
@@ -57,17 +58,22 @@ export default function HomePage() {
         <QuickCaptureCard />
       </motion.div>
 
-      {/* 2. Things to tell Neeraj */}
+      {/* 2. Ask Lumi (AI Brain & Memory Assistant) */}
+      <motion.div variants={itemVariants}>
+        <AskLumiCard />
+      </motion.div>
+
+      {/* 3. Things to tell Neeraj */}
       <motion.div variants={itemVariants}>
         <TellLaterPreview />
       </motion.div>
 
-      {/* 3. Memories */}
+      {/* 4. Memories */}
       <motion.div variants={itemVariants}>
         <MemoriesPreview />
       </motion.div>
 
-      {/* 4. Self Care */}
+      {/* 5. Self Care */}
       <motion.div variants={itemVariants}>
         <SelfCareCard />
       </motion.div>
