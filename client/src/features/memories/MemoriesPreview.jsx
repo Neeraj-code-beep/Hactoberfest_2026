@@ -1,58 +1,72 @@
 import React from 'react';
-import { BookOpen, Sparkles, Heart } from 'lucide-react';
-import { motion } from 'framer-motion';
-
-const MEMORIES = [
-  {
-    id: 1,
-    date: 'Yesterday, 6:40 PM',
-    content: 'Finished the design draft ahead of schedule. Felt peaceful having tea while watching the sunset.',
-    category: 'Little Moment',
-    accent: 'border-rose-100 bg-rose-50/40'
-  },
-  {
-    id: 2,
-    date: 'Oct 03, 2:15 PM',
-    content: 'Discovered a tiny cozy bakery nearby that plays soft acoustic songs.',
-    category: 'Places',
-    accent: 'border-amber-100 bg-amber-50/40'
-  }
-];
+import { useQuery } from '@tanstack/react-query';
+import { BookOpen } from 'lucide-react';
+import { getMemoriesApi } from '../../services/api.js';
+import MemoryCard from './MemoryCard.jsx';
+import EmptyState from '../../components/EmptyState.jsx';
 
 export default function MemoriesPreview() {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['memories'],
+    queryFn: getMemoriesApi,
+  });
+
+  const memories = data?.memories || [];
+
   return (
-    <div className="bg-white rounded-3xl p-6 border border-[#EFE7DE] shadow-sm hover:shadow-md transition-all duration-300">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-purple-100/70 text-purple-700">
-            <BookOpen className="w-5 h-5" />
+    <section id="memories" aria-labelledby="memories-heading" className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-6 h-6 rounded-lg bg-[#F1E8DA] flex items-center justify-center text-[#B97868]">
+              <BookOpen className="w-3.5 h-3.5" />
+            </div>
+            <h3 id="memories-heading" className="text-lg sm:text-xl font-semibold text-[#3B302B] font-display">
+              Little memories
+            </h3>
           </div>
-          <div>
-            <h3 className="text-lg font-bold text-[#2E2523] font-['Outfit']">Memories & Moments</h3>
-            <p className="text-xs text-[#796E69]">Little things worth keeping</p>
-          </div>
+          <p className="text-xs sm:text-sm text-[#8B7D74] font-sans">
+            Little moments saved along the way.
+          </p>
         </div>
+
+        {memories.length > 0 && (
+          <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-[#F1E8DA] text-[#3B302B] border border-[#E8DED2]">
+            {memories.length} saved
+          </span>
+        )}
       </div>
 
-      <div className="space-y-3">
-        {MEMORIES.map((m) => (
-          <motion.div
-            key={m.id}
-            whileHover={{ y: -2 }}
-            className={`p-4 rounded-2xl border ${m.accent} transition-all`}
-          >
-            <div className="flex items-center justify-between mb-1 text-[11px] text-[#796E69]">
-              <span className="font-semibold px-2 py-0.5 rounded bg-white text-[#5E514B] border border-[#EFE7DE]">
-                {m.category}
-              </span>
-              <span>{m.date}</span>
+      {isLoading ? (
+        <div className="space-y-3">
+          {[1, 2].map((k) => (
+            <div
+              key={k}
+              className="p-5 rounded-3xl bg-[#FFFDF8] border border-[#E8DED2] animate-pulse space-y-3"
+            >
+              <div className="h-4 bg-[#F1E8DA] rounded-full w-20" />
+              <div className="h-5 bg-[#F8F3EA] rounded-full w-4/5" />
+              <div className="h-3 bg-[#F8F3EA] rounded-full w-1/4" />
             </div>
-            <p className="text-xs sm:text-sm text-[#2E2523] leading-relaxed mt-2 font-['Lora'] italic">
-              "{m.content}"
-            </p>
-          </motion.div>
-        ))}
-      </div>
-    </div>
+          ))}
+        </div>
+      ) : isError ? (
+        <div className="p-4 rounded-3xl bg-[#FFFDF8] border border-[#E8DED2] text-xs text-[#8B7D74]">
+          Could not load memories right now.
+        </div>
+      ) : memories.length === 0 ? (
+        <EmptyState
+          icon={BookOpen}
+          title="No memories recorded yet"
+          message="Capture sweet moments, peaceful views, or notes in Quick Capture."
+        />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          {memories.map((memory) => (
+            <MemoryCard key={memory._id} memory={memory} />
+          ))}
+        </div>
+      )}
+    </section>
   );
 }

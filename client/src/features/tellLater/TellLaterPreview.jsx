@@ -1,104 +1,87 @@
 import React from 'react';
-import { MessageCircleHeart, CheckCircle2, Clock, Sparkles, ChevronRight } from 'lucide-react';
-import { motion } from 'framer-motion';
-
-const INITIAL_ITEMS = [
-  {
-    id: 1,
-    content: "Tell him about the cat video we both laughed at during lunch break",
-    tag: "Funny",
-    time: "2 hours ago",
-    told: false
-  },
-  {
-    id: 2,
-    content: "Ask him if he's free on Saturday evening for that café we bookmarked",
-    tag: "Plans",
-    time: "Yesterday",
-    told: false
-  },
-  {
-    id: 3,
-    content: "Remind him to take his jacket because it gets chilly at night",
-    tag: "Care",
-    time: "Yesterday",
-    told: true
-  }
-];
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { MessageCircleHeart, Heart } from 'lucide-react';
+import { getTellLaterItemsApi, completeTellLaterApi } from '../../services/api.js';
+import TellLaterCard from './TellLaterCard.jsx';
+import EmptyState from '../../components/EmptyState.jsx';
 
 export default function TellLaterPreview() {
-  const [items, setItems] = React.useState(INITIAL_ITEMS);
+  const queryClient = useQueryClient();
 
-  const toggleTold = (id) => {
-    setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, told: !item.told } : item))
-    );
-  };
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['tell-later'],
+    queryFn: getTellLaterItemsApi,
+  });
 
-  const pendingCount = items.filter((i) => !i.told).length;
+  const toggleMutation = useMutation({
+    mutationFn: (id) => completeTellLaterApi(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tell-later'] });
+    },
+  });
+
+  const items = data?.items || [];
+  const pendingCount = items.filter((i) => !i.isCompleted).length;
 
   return (
-    <div className="bg-white rounded-3xl p-6 border border-[#EFE7DE] shadow-sm hover:shadow-md transition-all duration-300">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-rose-100/70 text-rose-600">
-            <MessageCircleHeart className="w-5 h-5" />
+    <section id="tell-later" aria-labelledby="tell-later-heading" className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-6 h-6 rounded-lg bg-[#F1E8DA] flex items-center justify-center text-[#B97868]">
+              <MessageCircleHeart className="w-3.5 h-3.5" />
+            </div>
+            <h3 id="tell-later-heading" className="text-lg sm:text-xl font-semibold text-[#3B302B] font-display">
+              Things to tell Dheeraj
+            </h3>
           </div>
-          <div>
-            <h3 className="text-lg font-bold text-[#2E2523] font-['Outfit']">Tell Dheeraj Later</h3>
-            <p className="text-xs text-[#796E69]">Little things saved for your next chat</p>
-          </div>
+          <p className="text-xs sm:text-sm text-[#8B7D74] font-sans">
+            Little things you wanted to share later.
+          </p>
         </div>
 
-        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200">
-          {pendingCount} to share
-        </span>
+        {items.length > 0 && (
+          <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-[#F1E8DA] text-[#3B302B] border border-[#E8DED2]">
+            {pendingCount} to share
+          </span>
+        )}
       </div>
 
-      <div className="space-y-3">
-        {items.map((item) => (
-          <motion.div
-            key={item.id}
-            whileHover={{ scale: 1.01 }}
-            className={`p-3.5 rounded-2xl border transition-all flex items-start justify-between gap-3 ${
-              item.told
-                ? 'bg-[#FDFCFA] border-[#ECE4DC] opacity-60'
-                : 'bg-[#FFF9F6] border-[#F5E2DA] hover:border-rose-300'
-            }`}
-          >
-            <div className="flex items-start gap-3">
-              <button
-                onClick={() => toggleTold(item.id)}
-                className={`mt-0.5 rounded-full p-1 transition-colors ${
-                  item.told
-                    ? 'text-emerald-600 bg-emerald-100'
-                    : 'text-[#A89D98] hover:text-rose-600 hover:bg-rose-100'
-                }`}
-                title={item.told ? 'Marked as told' : 'Mark as told'}
-              >
-                <CheckCircle2 className="w-4 h-4" />
-              </button>
-
-              <div>
-                <p
-                  className={`text-sm leading-relaxed ${
-                    item.told ? 'line-through text-[#796E69]' : 'text-[#2E2523] font-medium'
-                  }`}
-                >
-                  {item.content}
-                </p>
-                <div className="flex items-center gap-2 mt-1.5 text-[11px] text-[#A89D98]">
-                  <span className="px-1.5 py-0.5 rounded bg-white border border-[#EFE7DE] text-[#695D57]">
-                    {item.tag}
-                  </span>
-                  <span>•</span>
-                  <span>{item.time}</span>
-                </div>
-              </div>
+      {isLoading ? (
+        <div className="space-y-3">
+          {[1, 2].map((k) => (
+            <div
+              key={k}
+              className="p-5 rounded-3xl bg-[#FFFDF8] border border-[#E8DED2] animate-pulse space-y-3"
+            >
+              <div className="h-4 bg-[#F1E8DA] rounded-full w-24" />
+              <div className="h-4 bg-[#F8F3EA] rounded-full w-3/4" />
+              <div className="h-3 bg-[#F8F3EA] rounded-full w-1/3" />
             </div>
-          </motion.div>
-        ))}
-      </div>
-    </div>
+          ))}
+        </div>
+      ) : isError ? (
+        <div className="p-4 rounded-3xl bg-[#FFFDF8] border border-[#E8DED2] text-xs text-[#8B7D74]">
+          Could not load items right now.
+        </div>
+      ) : items.length === 0 ? (
+        <EmptyState
+          icon={MessageCircleHeart}
+          title="No pending thoughts for Dheeraj"
+          message="When something funny or interesting happens, type it in Quick Capture above."
+        />
+      ) : (
+        <div className="grid grid-cols-1 gap-3">
+          {items.map((item) => (
+            <TellLaterCard
+              key={item._id}
+              item={item}
+              onToggleComplete={(id) => toggleMutation.mutate(id)}
+              isPending={toggleMutation.isPending}
+            />
+          ))}
+        </div>
+      )}
+    </section>
   );
 }

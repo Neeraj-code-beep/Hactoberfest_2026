@@ -1,32 +1,85 @@
-import React from 'react';
-import { Heart, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { Sparkles, Menu, Heart } from 'lucide-react';
 import ServerStatusBadge from './ServerStatusBadge.jsx';
+import MobileNav from './MobileNav.jsx';
 
-export default function Header() {
+export default function Header({ activeSection, onSelectSection }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navLinks = [
+    { id: 'tell-later', label: 'Tell Later' },
+    { id: 'memories', label: 'Memories' },
+    { id: 'self-care', label: 'Self Care' },
+  ];
+
   return (
-    <header className="w-full border-b border-[#EFE7DE] bg-[#FAF7F2]/90 backdrop-blur-md sticky top-0 z-40">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-        {/* Brand */}
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-400 to-amber-300 flex items-center justify-center text-white shadow-sm shadow-rose-200">
-            <Sparkles className="w-5 h-5 fill-white/30" />
+    <>
+      <header className="w-full border-b border-[#E8DED2]/80 bg-[#F8F3EA]/90 backdrop-blur-md sticky top-0 z-30 transition-all">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          {/* Brand Logo */}
+          <div className="flex items-center gap-2.5">
+            <a
+              href="#top"
+              onClick={(e) => {
+                e.preventDefault();
+                onSelectSection('top');
+              }}
+              className="flex items-center gap-2 group"
+            >
+              <div className="w-8 h-8 rounded-xl bg-[#FFFDF8] border border-[#E8DED2] flex items-center justify-center text-[#B97868] shadow-2xs group-hover:border-[#B97868]/40 transition-colors">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-xl font-bold font-display text-[#3B302B] tracking-tight">Lumi</span>
+                <span className="text-[11px] font-normal text-[#8B7D74] hidden sm:inline">
+                  for Ashmita
+                </span>
+              </div>
+            </a>
           </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <h1 className="text-xl font-bold tracking-tight text-[#2E2523] font-['Outfit']">Lumi</h1>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 font-medium font-sans">
-                for Ashmita
-              </span>
-            </div>
-            <p className="text-xs text-[#796E69] font-sans">Little Things Companion</p>
-          </div>
-        </div>
 
-        {/* Status / Meta */}
-        <div className="flex items-center gap-3">
-          <ServerStatusBadge />
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-1" aria-label="Main Navigation">
+            {navLinks.map(({ id, label }) => (
+              <button
+                key={id}
+                onClick={() => onSelectSection(id)}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  activeSection === id
+                    ? 'bg-[#F1E8DA] text-[#3B302B]'
+                    : 'text-[#8B7D74] hover:text-[#3B302B] hover:bg-[#FFFDF8]'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </nav>
+
+          {/* Status & Mobile Menu Toggle */}
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:block">
+              <ServerStatusBadge />
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(true)}
+              className="p-2 rounded-xl border border-[#E8DED2] bg-[#FFFDF8] text-[#3B302B] md:hidden hover:bg-[#F1E8DA] transition-colors focus:outline-none focus:ring-2 focus:ring-[#B97868]/30"
+              aria-label="Open menu"
+            >
+              <Menu className="w-4 h-4" />
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Mobile Drawer */}
+      <MobileNav
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        activeSection={activeSection}
+        onSelectSection={onSelectSection}
+      />
+    </>
   );
 }

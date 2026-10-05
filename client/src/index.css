@@ -2,39 +2,36 @@
 
 @layer base {
   :root {
-    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    --font-heading: 'Outfit', sans-serif;
-    --font-serif: 'Lora', Georgia, serif;
+    --font-sans: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-heading: 'Playfair Display', 'Lora', Georgia, serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 
-    --bg-primary: #FAF7F2;
-    --bg-card: #FFFFFF;
-    --bg-card-subtle: #F5EFEB;
-    --bg-rose-tint: #FFF1F2;
+    --bg-cream: #F8F3EA;
+    --bg-surface: #FFFDF8;
+    --bg-secondary: #F1E8DA;
+    --accent-soft: #E8C7B8;
+    --accent-primary: #B97868;
+    --text-main: #3B302B;
+    --text-muted: #8B7D74;
+    --border-warm: #E8DED2;
+  }
 
-    --accent-blush: #E88388;
-    --accent-rose: #DD576D;
-    --accent-warm: #E2A077;
-    --accent-sage: #9AB4A2;
-
-    --text-main: #2E2523;
-    --text-muted: #796E69;
-    --text-soft: #A89D98;
-
-    --border-warm: #EFE7DE;
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
-    font-family: var(--font-sans);
-    background-color: var(--bg-primary);
+    font-family: var(--font-body);
+    background-color: var(--bg-cream);
     color: var(--text-main);
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1, h2, h3, .font-display {
     font-family: var(--font-heading);
   }
 }
 
-/* Custom scrollbars */
+/* Custom warm scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -45,19 +42,19 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #e2d7ce;
+  background: #e0d4c5;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #d4c5b9;
+  background: #d1c1af;
 }
 
-/* Subtle glow effects */
-.glow-blush {
-  box-shadow: 0 10px 30px -5px rgba(221, 87, 109, 0.12);
+/* Tasteful subtle warm card shadow */
+.shadow-lumi {
+  box-shadow: 0 4px 20px -2px rgba(59, 48, 43, 0.05), 0 2px 6px -1px rgba(59, 48, 43, 0.03);
 }
 
-.glow-warm {
-  box-shadow: 0 10px 30px -5px rgba(226, 160, 119, 0.12);
+.shadow-lumi-hover {
+  box-shadow: 0 10px 30px -4px rgba(59, 48, 43, 0.08), 0 4px 12px -2px rgba(59, 48, 43, 0.04);
 }
