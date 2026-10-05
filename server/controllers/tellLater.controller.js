@@ -1,31 +1,31 @@
 import Item from '../models/Item.js';
 import { isDbConnected } from '../config/db.js';
-import { fallbackItems } from './capture.controller.js';
+import { logger } from '../utils/logger.js';
 
 /**
- * Get all items to tell Neeraj
+ * Get all items to tell Neeraj / tell later
  */
 export const getTellLaterItems = async (req, res, next) => {
   try {
-    if (isDbConnected()) {
-      const items = await Item.find({
-        intent: 'tell_later',
-      }).sort({ createdAt: -1 });
-
-      return res.status(200).json({
-        success: true,
-        count: items.length,
-        items,
+    if (!isDbConnected()) {
+      return res.status(503).json({
+        success: false,
+        message: "Database connection unavailable. Please try again.",
+        items: []
       });
     }
 
-    const items = fallbackItems.filter((i) => i.intent === 'tell_later');
+    const items = await Item.find({
+      intent: 'tell_later',
+    }).sort({ createdAt: -1 });
+
     return res.status(200).json({
       success: true,
       count: items.length,
       items,
     });
   } catch (error) {
+    logger.error(`[TellLater Error] ${error.message}`);
     next(error);
   }
 };
@@ -37,37 +37,29 @@ export const completeTellLaterItem = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    if (isDbConnected()) {
-      const item = await Item.findById(id);
-      if (!item) {
-        return res.status(404).json({ success: false, message: 'Item not found' });
-      }
-
-      item.isCompleted = !item.isCompleted;
-      item.completedAt = item.isCompleted ? new Date() : null;
-      await item.save();
-
-      return res.status(200).json({
-        success: true,
-        message: item.isCompleted ? 'Marked as told to Neeraj ♡' : 'Restored to queue',
-        item,
+    if (!isDbConnected()) {
+      return res.status(503).json({
+        success: false,
+        message: "Database connection unavailable."
       });
     }
 
-    const item = fallbackItems.find((i) => i._id === id);
+    const item = await Item.findById(id);
     if (!item) {
       return res.status(404).json({ success: false, message: 'Item not found' });
     }
 
     item.isCompleted = !item.isCompleted;
-    item.completedAt = item.isCompleted ? new Date().toISOString() : null;
+    item.completedAt = item.isCompleted ? new Date() : null;
+    await item.save();
 
     return res.status(200).json({
       success: true,
-      message: item.isCompleted ? 'Marked as told to Neeraj ♡' : 'Restored to queue',
+      message: item.isCompleted ? 'Marked as told ♡' : 'Restored to queue',
       item,
     });
   } catch (error) {
+    logger.error(`[CompleteTellLater Error] ${error.message}`);
     next(error);
   }
 };

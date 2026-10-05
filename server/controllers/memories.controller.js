@@ -1,31 +1,31 @@
 import Item from '../models/Item.js';
 import { isDbConnected } from '../config/db.js';
-import { fallbackItems } from './capture.controller.js';
+import { logger } from '../utils/logger.js';
 
 /**
  * Get memories timeline
  */
 export const getMemories = async (req, res, next) => {
   try {
-    if (isDbConnected()) {
-      const items = await Item.find({
-        intent: { $in: ['memory', 'note'] },
-      }).sort({ createdAt: -1 });
-
-      return res.status(200).json({
-        success: true,
-        count: items.length,
-        memories: items,
+    if (!isDbConnected()) {
+      return res.status(503).json({
+        success: false,
+        message: "Database connection unavailable. Please try again.",
+        memories: []
       });
     }
 
-    const memories = fallbackItems.filter((i) => i.intent === 'memory' || i.intent === 'note');
+    const items = await Item.find({
+      intent: { $in: ['memory', 'note', 'reminder'] },
+    }).sort({ createdAt: -1 });
+
     return res.status(200).json({
       success: true,
-      count: memories.length,
-      memories,
+      count: items.length,
+      memories: items,
     });
   } catch (error) {
+    logger.error(`[Memories Error] ${error.message}`);
     next(error);
   }
 };

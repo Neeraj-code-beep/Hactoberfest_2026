@@ -1,97 +1,81 @@
 import SelfCare from '../models/SelfCare.js';
 import { isDbConnected } from '../config/db.js';
+import { logger } from '../utils/logger.js';
 
 const getTodayDateKey = () => new Date().toISOString().split('T')[0];
 
-let fallbackSelfCare = {
-  date: getTodayDateKey(),
-  meals: {
-    breakfast: true,
-    lunch: false,
-    dinner: false,
-  },
-  waterGlasses: 4,
-  notes: 'Stay hydrated and take a pause during deep study!',
-};
-
 /**
- * Get today's self-care status
+ * Get today's self-care status from MongoDB
  */
 export const getSelfCare = async (req, res, next) => {
   try {
     const today = getTodayDateKey();
 
-    if (isDbConnected()) {
-      let record = await SelfCare.findOne({ date: today });
-      if (!record) {
-        record = await SelfCare.create({
+    if (!isDbConnected()) {
+      return res.status(503).json({
+        success: false,
+        message: "Database connection unavailable.",
+        data: {
           date: today,
           meals: { breakfast: false, lunch: false, dinner: false },
           waterGlasses: 0,
-        });
-      }
-      return res.status(200).json({
-        success: true,
-        data: record,
+        }
       });
     }
 
-    if (fallbackSelfCare.date !== today) {
-      fallbackSelfCare = {
+    let record = await SelfCare.findOne({ date: today });
+    if (!record) {
+      record = await SelfCare.create({
         date: today,
         meals: { breakfast: false, lunch: false, dinner: false },
         waterGlasses: 0,
-        notes: '',
-      };
+      });
     }
 
     return res.status(200).json({
       success: true,
-      data: fallbackSelfCare,
+      data: record,
     });
   } catch (error) {
+    logger.error(`[SelfCare Error] ${error.message}`);
     next(error);
   }
 };
 
 /**
- * Update today's self-care status
+ * Update today's self-care check-in in MongoDB
  */
 export const updateSelfCare = async (req, res, next) => {
   try {
     const today = getTodayDateKey();
     const { meals, waterGlasses, notes } = req.body;
 
-    if (isDbConnected()) {
-      const updated = await SelfCare.findOneAndUpdate(
-        { date: today },
-        {
-          $set: {
-            ...(meals ? { meals } : {}),
-            ...(waterGlasses !== undefined ? { waterGlasses } : {}),
-            ...(notes !== undefined ? { notes } : {}),
-          },
-        },
-        { new: true, upsert: true }
-      );
-
-      return res.status(200).json({
-        success: true,
-        message: 'Self-care logged ♡',
-        data: updated,
+    if (!isDbConnected()) {
+      return res.status(503).json({
+        success: false,
+        message: "Database connection unavailable. Please try again."
       });
     }
 
-    if (meals) fallbackSelfCare.meals = { ...fallbackSelfCare.meals, ...meals };
-    if (waterGlasses !== undefined) fallbackSelfCare.waterGlasses = waterGlasses;
-    if (notes !== undefined) fallbackSelfCare.notes = notes;
+    const updated = await SelfCare.findOneAndUpdate(
+      { date: today },
+      {
+        $set: {
+          ...(meals ? { meals } : {}),
+          ...(waterGlasses !== undefined ? { waterGlasses } : {}),
+          ...(notes !== undefined ? { notes } : {}),
+        },
+      },
+      { new: true, upsert: true }
+    );
 
     return res.status(200).json({
       success: true,
       message: 'Self-care logged ♡',
-      data: fallbackSelfCare,
+      data: updated,
     });
   } catch (error) {
+    logger.error(`[UpdateSelfCare Error] ${error.message}`);
     next(error);
   }
 };

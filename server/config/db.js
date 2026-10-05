@@ -1,28 +1,34 @@
 import mongoose from 'mongoose';
+import { logger } from '../utils/logger.js';
 
 /**
  * Connect to MongoDB database
  * Provides graceful connection handling with reconnect listeners
  */
 export const connectDB = async () => {
-  const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/lumi';
+  const uri = process.env.MONGODB_URI;
+
+  if (!uri) {
+    logger.warn('[Database] MONGODB_URI is not set in environment variables.');
+    return;
+  }
 
   try {
     const conn = await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: 3000,
+      dbName: 'lumi',
+      serverSelectionTimeoutMS: 5000,
     });
-    console.log(`[Database] MongoDB Connected: ${conn.connection.host}/${conn.connection.name}`);
+    logger.info(`[Database] MongoDB Connected: host=${conn.connection.host}, database=${conn.connection.name}`);
   } catch (error) {
-    console.warn(`[Database Warning] Could not connect to MongoDB: ${error.message}`);
-    console.warn('[Database Warning] Lumi will run in offline/preview mode until MongoDB is reachable.');
+    logger.error(`[Database Error] Could not connect to MongoDB: ${error.message}`);
   }
 
   mongoose.connection.on('disconnected', () => {
-    console.warn('[Database] MongoDB connection lost.');
+    logger.warn('[Database] MongoDB connection lost.');
   });
 
   mongoose.connection.on('reconnected', () => {
-    console.log('[Database] MongoDB reconnected successfully.');
+    logger.info('[Database] MongoDB reconnected successfully.');
   });
 };
 

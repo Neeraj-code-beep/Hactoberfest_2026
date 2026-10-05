@@ -14,11 +14,13 @@ const ItemSchema = new mongoose.Schema(
     },
     recipient: {
       type: String,
-      default: 'Neeraj',
+      default: null,
+      trim: true,
     },
     category: {
       type: String,
       default: 'general',
+      trim: true,
     },
     priority: {
       type: String,
