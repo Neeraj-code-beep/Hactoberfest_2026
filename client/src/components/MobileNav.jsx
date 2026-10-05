@@ -31,7 +31,7 @@ export default function MobileNav({ isOpen, onClose, activeSection, onSelectSect
               <div className="flex items-center gap-2">
                 <span className="text-xl font-bold font-display text-[#3B302B]">Lumi</span>
                 <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#F1E8DA] text-[#8B7D74] font-sans">
-                  for Ashmita
+                  Companion
                 </span>
               </div>
 
@@ -47,7 +47,7 @@ export default function MobileNav({ isOpen, onClose, activeSection, onSelectSect
             <div className="flex flex-col gap-2 mb-6">
               {[
                 { id: 'quick-capture', label: 'Quick Capture', icon: Sparkles },
-                { id: 'tell-later', label: 'Things to tell Dheeraj', icon: MessageCircleHeart },
+                { id: 'tell-later', label: 'Things to tell Neeraj', icon: MessageCircleHeart },
                 { id: 'memories', label: 'Memories', icon: BookOpen },
                 { id: 'self-care', label: 'Self Care', icon: HeartHandshake },
               ].map(({ id, label, icon: Icon }) => (

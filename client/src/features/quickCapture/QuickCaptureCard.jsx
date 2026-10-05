@@ -5,10 +5,10 @@ import { Sparkles, ArrowRight, Check, AlertCircle, Heart } from 'lucide-react';
 import { captureThoughtApi } from '../../services/api.js';
 
 const QUICK_STARTERS = [
-  'Neha said something funny in class today, tell Dheeraj later',
+  'Neha said something funny in class today, tell Neeraj later',
   'Had lunch on time and drank plenty of water ✨',
   'Found a quiet library corner with perfect sunlight',
-  'Ask Dheeraj about that podcast he recommended',
+  'Ask Neeraj about that podcast he recommended',
 ];
 
 export default function QuickCaptureCard() {
@@ -82,7 +82,7 @@ export default function QuickCaptureCard() {
             What do you want to remember?
           </h3>
           <p className="text-xs sm:text-sm text-[#8B7D74] mb-5 font-sans leading-relaxed">
-            Jot down a fleeting thought, something funny for Dheeraj, or a little self-care moment.
+            Jot down a fleeting thought, something funny for Neeraj, or a little self-care moment.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">

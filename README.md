@@ -1,49 +1,50 @@
-# ✨ Lumi — Ashmita's Little Things Companion
+# ✨ Lumi — Little Things Companion
 
-> Built with love for **Ashmita** for the **Hacktoberfest 2026 DEV Weekend Challenge: Build for a Friend**.
+> Built with care for the **Hacktoberfest 2026 DEV Weekend Challenge: Build for a Friend**.
 
 ---
 
 ## 🌟 The Story & Idea
 
-Ashmita often has little thoughts she wants to remember or tell Dheeraj later. In the flow of busy college lectures, deep work, and conversations, she can get distracted and forget those little moments. Sometimes she even gets so busy that she forgets to eat or hydrate.
+In the flow of busy college lectures, deep work, and everyday moments, it's easy to get distracted and forget the little thoughts we wanted to share later, or even forget to eat or hydrate.
 
-**Lumi** is a warm, personal AI companion designed specifically for Ashmita. Rather than acting as a generic chatbot, Lumi acts as an intelligent decision and organization layer:
+**Lumi** is a warm, personal AI companion designed to act as an intelligent decision and organization layer:
 - **Quick Natural Thought Capture**: Type freely in Hindi, Hinglish, or English.
-- **Tell Dheeraj Later**: Queues funny moments, questions, and reminders for her next conversation with Dheeraj.
+- **Things to tell Neeraj**: Queues funny moments, questions, and reminders for the next conversation.
 - **Memories Timeline**: Keeps track of small sweet moments and peaceful discoveries.
 - **Gentle Self-Care**: Soft check-ins for meals and hydration without stressful alarms.
 
 ---
 
-## 🧠 Core AI Concept (Gemma Integration)
+## 🧠 Core AI Concept (Gemma + Ollama Integration)
 
-Lumi uses the **Gemma open-weight model** as a structured intent extraction engine:
+Lumi uses the **Gemma 2 open-weight model** running locally on **Ollama** for structured intent extraction:
 
 ```text
 User Natural-Language Input
          │
          ▼
-  Gemma Open-Weight Model
+    GemmaService
+         │
+         ▼
+  Ollama (gemma2:2b)
          │
          ▼
   Structured Intent Extraction
   {
     "intent": "tell_later",
-    "recipient": "Dheeraj",
+    "recipient": "Neeraj",
     "category": "college",
-    "content": "...",
+    "content": "Something funny happened in class today",
     "priority": "normal"
   }
          │
          ▼
-  Application Action & MongoDB Persistence
+  Validation & MongoDB Persistence
          │
          ▼
   Warm Interactive UI
 ```
-
-The AI layer is strictly modularized (`server/services/gemma/`) so different local runtimes (Ollama, vLLM, HuggingFace) or providers can be plugged in seamlessly.
 
 ---
 
@@ -52,48 +53,7 @@ The AI layer is strictly modularized (`server/services/gemma/`) so different loc
 - **Frontend**: React 19, Vite, Tailwind CSS v4, Framer Motion, Lucide React, TanStack Query, Axios
 - **Backend**: Node.js, Express, REST API, Mongoose
 - **Database**: MongoDB
-- **AI**: Gemma Open-Weight Model Engine (Modular Adapter)
-
----
-
-## 📁 Monorepo Project Structure
-
-```text
-lumi/
-├── client/                     # Frontend Vite + React application
-│   ├── src/
-│   │   ├── components/         # Shared UI components (Header, StatusBadge)
-│   │   ├── features/           # Domain feature modules
-│   │   │   ├── quickCapture/   # Natural language thought capture
-│   │   │   ├── tellLater/      # "Tell Dheeraj Later" queue
-│   │   │   ├── checkins/       # Gentle nourishment & hydration tracker
-│   │   │   └── memories/       # Personal memory timeline
-│   │   ├── hooks/              # Custom React Query hooks (useHealth)
-│   │   ├── lib/                # Shared utilities & theme helpers
-│   │   ├── pages/              # Page layouts (HomePage)
-│   │   ├── services/           # Axios API services
-│   │   ├── App.jsx             # Root application component
-│   │   ├── main.jsx            # Entrypoint
-│   │   └── index.css           # Tailwind design tokens & typography
-│   └── vite.config.js          # Vite config with API proxy
-│
-├── server/                     # Backend Express REST API
-│   ├── config/                 # DB & environment configuration
-│   ├── controllers/            # Request handlers (health, etc.)
-│   ├── middleware/             # Error handlers & request loggers
-│   ├── models/                 # Mongoose schemas & data models
-│   ├── routes/                 # Express API routes (/api/health, etc.)
-│   ├── services/
-│   │   └── gemma/              # Modular Gemma AI adapter
-│   ├── utils/                  # Structured logger & utilities
-│   └── server.js               # Express application entrypoint
-│
-├── .env.example                # Sample environment variables
-├── .gitignore                  # Monorepo gitignore
-├── CONTRIBUTING.md             # Contribution guidelines
-├── LICENSE                     # MIT License
-└── README.md                   # Project documentation
-```
+- **AI**: Google Gemma 2 2B Instruct (`gemma2:2b`) running locally via Ollama
 
 ---
 
@@ -101,26 +61,27 @@ lumi/
 
 ### Prerequisites
 - Node.js (v18+)
-- MongoDB (optional for local mock preview mode; required for persistent DB actions)
+- Ollama (`ollama pull gemma2:2b`)
+- MongoDB (optional for offline preview mode; connects automatically when running)
 
-### 1. Backend Setup
+### 1. Ollama & Gemma Setup
+```bash
+ollama serve
+ollama pull gemma2:2b
+```
+
+### 2. Backend Setup
 ```bash
 cd server
 cp .env.example .env
 npm install
 npm run dev
 ```
-The backend starts on `http://localhost:5000` (Health check: `http://localhost:5000/api/health`).
 
-### 2. Frontend Setup
+### 3. Frontend Setup
 ```bash
 cd client
 npm install
 npm run dev
 ```
-The frontend starts on `http://localhost:5173` and proxies API requests to the backend.
-
----
-
-## 💖 Design Aesthetics
-Lumi is styled with a warm cream neutral background (`#FAF7F2`), soft blush/rose accents (`#E88388`, `#FFF1F2`), and gentle serif/sans typography (`Outfit`, `Plus Jakarta Sans`, `Lora`) designed to feel like a heartfelt personal companion.
+Open `http://localhost:5173` in your browser.

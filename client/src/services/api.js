@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
-  timeout: 10000,
+  timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -25,7 +25,7 @@ export const captureThoughtApi = async (text) => {
 };
 
 /**
- * Fetch items to tell Dheeraj later
+ * Fetch items to tell Neeraj later
  */
 export const getTellLaterItemsApi = async () => {
   const response = await api.get('/tell-later');

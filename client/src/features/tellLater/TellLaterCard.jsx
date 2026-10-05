@@ -69,7 +69,7 @@ export default function TellLaterCard({ item, onToggleComplete, isPending }) {
 
       <div className="flex items-center justify-between pt-2 border-t border-[#E8DED2]/50">
         <span className="text-[11px] text-[#8B7D74]">
-          {item.isCompleted ? 'Shared with Dheeraj ♡' : 'Saved for next chat'}
+          {item.isCompleted ? 'Shared with Neeraj ♡' : 'Saved for next chat'}
         </span>
 
         <button

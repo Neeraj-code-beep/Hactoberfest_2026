@@ -41,7 +41,7 @@ export default function MemoryCard({ memory }) {
 
       <div className="pt-3 border-t border-[#E8DED2]/40 flex items-center gap-1.5 text-[11px] text-[#8B7D74]">
         <Sparkles className="w-3 h-3 text-[#B97868]" />
-        <span>Kept in Ashmita's little moments</span>
+        <span>Kept in your little moments</span>
       </div>
     </motion.article>
   );

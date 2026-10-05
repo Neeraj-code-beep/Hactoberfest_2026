@@ -32,7 +32,7 @@ export default function Header({ activeSection, onSelectSection }) {
               <div className="flex items-baseline gap-2">
                 <span className="text-xl font-bold font-display text-[#3B302B] tracking-tight">Lumi</span>
                 <span className="text-[11px] font-normal text-[#8B7D74] hidden sm:inline">
-                  for Ashmita
+                  Companion
                 </span>
               </div>
             </a>

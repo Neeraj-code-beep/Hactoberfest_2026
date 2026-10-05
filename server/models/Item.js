@@ -9,16 +9,16 @@ const ItemSchema = new mongoose.Schema(
     },
     intent: {
       type: String,
-      enum: ['tell_later', 'memory', 'self_care', 'note'],
+      enum: ['tell_later', 'memory', 'self_care', 'reminder', 'note'],
       default: 'memory',
     },
     recipient: {
       type: String,
-      default: 'Dheeraj',
+      default: 'Neeraj',
     },
     category: {
       type: String,
-      default: 'General',
+      default: 'general',
     },
     priority: {
       type: String,

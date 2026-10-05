@@ -3,7 +3,7 @@ import { isDbConnected } from '../config/db.js';
 import { fallbackItems } from './capture.controller.js';
 
 /**
- * Get all items to tell Dheeraj
+ * Get all items to tell Neeraj
  */
 export const getTellLaterItems = async (req, res, next) => {
   try {
@@ -49,7 +49,7 @@ export const completeTellLaterItem = async (req, res, next) => {
 
       return res.status(200).json({
         success: true,
-        message: item.isCompleted ? 'Marked as told to Dheeraj ♡' : 'Restored to queue',
+        message: item.isCompleted ? 'Marked as told to Neeraj ♡' : 'Restored to queue',
         item,
       });
     }
@@ -64,7 +64,7 @@ export const completeTellLaterItem = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      message: item.isCompleted ? 'Marked as told to Dheeraj ♡' : 'Restored to queue',
+      message: item.isCompleted ? 'Marked as told to Neeraj ♡' : 'Restored to queue',
       item,
     });
   } catch (error) {

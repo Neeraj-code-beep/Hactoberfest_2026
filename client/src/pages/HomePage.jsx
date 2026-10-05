@@ -1,14 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Heart } from 'lucide-react';
-import { getGreetingForAshmita } from '../lib/utils.js';
+import { getGreeting } from '../lib/utils.js';
 import QuickCaptureCard from '../features/quickCapture/QuickCaptureCard.jsx';
 import TellLaterPreview from '../features/tellLater/TellLaterPreview.jsx';
 import MemoriesPreview from '../features/memories/MemoriesPreview.jsx';
 import SelfCareCard from '../features/checkins/SelfCareCard.jsx';
 
 export default function HomePage() {
-  const greeting = getGreetingForAshmita();
+  const greeting = getGreeting();
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -40,15 +40,15 @@ export default function HomePage() {
       <motion.section variants={itemVariants} className="text-center sm:text-left space-y-3 pt-2">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFFDF8] border border-[#E8DED2] text-xs text-[#8B7D74] shadow-2xs mb-1">
           <Heart className="w-3 h-3 text-[#B97868] fill-[#B97868]/40" />
-          <span>Personal space for Ashmita</span>
+          <span>Your personal little space</span>
         </div>
 
         <h2 className="text-2xl sm:text-4xl font-semibold text-[#3B302B] font-display tracking-tight leading-tight">
-          {greeting.text}, Ashmita ♡
+          {greeting.text} ♡
         </h2>
 
         <p className="text-sm sm:text-base text-[#8B7D74] max-w-xl font-sans leading-relaxed">
-          A little space for the things you don't want to forget — thoughts, little moments, things to tell Dheeraj later, all in one place.
+          A little space for the things you don't want to forget — thoughts, little moments, things to tell Neeraj later, all in one place.
         </p>
       </motion.section>
 
@@ -57,7 +57,7 @@ export default function HomePage() {
         <QuickCaptureCard />
       </motion.div>
 
-      {/* 2. Things to tell Dheeraj */}
+      {/* 2. Things to tell Neeraj */}
       <motion.div variants={itemVariants}>
         <TellLaterPreview />
       </motion.div>
@@ -80,7 +80,7 @@ export default function HomePage() {
         <div className="flex items-center gap-1.5">
           <span>Lumi</span>
           <span>•</span>
-          <span>Made for Ashmita</span>
+          <span>Little Things Companion</span>
         </div>
         <div className="text-[11px] text-[#8B7D74]/80">
           DEV Weekend Challenge: Build for a Friend

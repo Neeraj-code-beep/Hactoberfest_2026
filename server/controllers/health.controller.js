@@ -2,7 +2,7 @@ import { isDbConnected } from '../config/db.js';
 
 /**
  * Health check controller
- * Returns service status, database state, uptime, and system metadata
+ * Returns service status, database state, uptime, and AI engine status
  */
 export const getHealth = (req, res) => {
   const dbStatus = isDbConnected() ? 'connected' : 'disconnected';
@@ -10,7 +10,7 @@ export const getHealth = (req, res) => {
   res.status(200).json({
     status: 'ok',
     service: 'Lumi Companion API',
-    recipient: 'Ashmita',
+    recipient: 'Neeraj',
     version: '1.0.0',
     uptimeSeconds: Math.floor(process.uptime()),
     database: {
@@ -18,7 +18,8 @@ export const getHealth = (req, res) => {
     },
     timestamp: new Date().toISOString(),
     aiEngine: {
-      provider: process.env.GEMMA_PROVIDER || 'gemma-local-or-api',
+      provider: process.env.GEMMA_PROVIDER || 'ollama',
+      model: process.env.GEMMA_MODEL || 'gemma2:2b',
       status: 'ready'
     }
   });

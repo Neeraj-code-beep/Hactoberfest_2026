@@ -2,7 +2,7 @@
   "name": "lumi-monorepo",
   "version": "1.0.0",
   "private": true,
-  "description": "Lumi — Ashmita's Little Things Companion",
+  "description": "Lumi — Little Things Companion",
   "scripts": {
     "dev:server": "npm run dev --prefix server",
     "dev:client": "npm run dev --prefix client",
@@ -12,8 +12,10 @@
   "keywords": [
     "lumi",
     "ai-companion",
+    "gemma",
+    "ollama",
     "hacktoberfest"
   ],
-  "author": "",
+  "author": "Neeraj",
   "license": "MIT"
 }

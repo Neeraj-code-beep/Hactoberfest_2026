@@ -32,7 +32,7 @@ export default function TellLaterPreview() {
               <MessageCircleHeart className="w-3.5 h-3.5" />
             </div>
             <h3 id="tell-later-heading" className="text-lg sm:text-xl font-semibold text-[#3B302B] font-display">
-              Things to tell Dheeraj
+              Things to tell Neeraj
             </h3>
           </div>
           <p className="text-xs sm:text-sm text-[#8B7D74] font-sans">
@@ -67,7 +67,7 @@ export default function TellLaterPreview() {
       ) : items.length === 0 ? (
         <EmptyState
           icon={MessageCircleHeart}
-          title="No pending thoughts for Dheeraj"
+          title="No pending thoughts for Neeraj"
           message="When something funny or interesting happens, type it in Quick Capture above."
         />
       ) : (

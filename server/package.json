@@ -1,7 +1,7 @@
 {
   "name": "lumi-server",
   "version": "1.0.0",
-  "description": "Backend API for Lumi - Ashmita's Little Things Companion",
+  "description": "Backend API for Lumi - Little Things Companion",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -19,8 +19,9 @@
     "lumi",
     "ai-companion",
     "gemma",
+    "ollama",
     "hacktoberfest"
   ],
-  "author": "",
+  "author": "Neeraj",
   "license": "MIT"
 }
